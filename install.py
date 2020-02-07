@@ -34,13 +34,13 @@ def fetch_url(url):
     # Return the hosts
     return response
 
-#Thank you mmotti and CyberAndi
-url_regexps_remote = 'https://github.com/Mr-Robot-ops/pihole-regex'
+
+url_regexps_remote = 'https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/regex.list'
 path_pihole = r'/etc/pihole'
 path_legacy_regex = os.path.join(path_pihole, 'regex.list')
-path_legacy_mrrobotops_regex = os.path.join(path_pihole, 'mrrobotops-regex.list')
+path_legacy_mmotti_regex = os.path.join(path_pihole, 'mmotti-regex.list')
 path_pihole_db = os.path.join(path_pihole, 'gravity.db')
-install_comment = 'github.com/mrrobotops/pihole-regex'
+install_comment = 'github.com/mmotti/pihole-regex'
 
 
 db_exists = False
@@ -49,7 +49,7 @@ c = None
 
 regexps_remote = set()
 regexps_local = set()
-regexps_mrrobotops_local = set()
+regexps_mmotti_local = set()
 regexps_legacy = set()
 regexps_remove = set()
 
@@ -121,24 +121,24 @@ if db_exists:
                       [(x, install_comment) for x in sorted(regexps_remote)])
     conn.commit()
 
-    # Fetch all current mrrobotops regexps in the local db
+    # Fetch all current mmotti regexps in the local db
     c.execute('SELECT domain FROM domainlist WHERE type = 3 AND comment = ?', (install_comment,))
-    regexps_mrrobotops_local_results = c.fetchall()
-    regexps_mrrobotops_local.update([x[0] for x in regexps_mrrobotops_local_results])
+    regexps_mmotti_local_results = c.fetchall()
+    regexps_mmotti_local.update([x[0] for x in regexps_mmotti_local_results])
 
     # Remove any local entries that do not exist in the remote list
     # (will only work for previous installs where we've set the comment field)
     print('[i] Identifying obsolete regexps')
-    regexps_remove = regexps_mrrobotops_local.difference(regexps_remote)
+    regexps_remove = regexps_mmotti_local.difference(regexps_remote)
 
     if regexps_remove:
         print('[i] Removing obsolete regexps')
         c.executemany('DELETE FROM domainlist WHERE type = 3 AND domain in (?)', [(x,) for x in sorted(regexps_remove)])
         conn.commit()
 
-    # Delete Mr-Robot-ops regex.list as if we've migrated to the db, it's no longer needed
-    if os.path.exists(path_legacy_mrrobotops_regex):
-        os.remove(path_legacy_mrrobotops_regex)
+    # Delete mmotti-regex.list as if we've migrated to the db, it's no longer needed
+    if os.path.exists(path_legacy_mmotti_regex):
+        os.remove(path_legacy_mmotti_regex)
 
     print('[i] Restarting Pi-hole')
     subprocess.call(['pihole', 'restartdns', 'reload'], stdout=subprocess.DEVNULL)
@@ -163,9 +163,9 @@ else:
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
         # If we have a record of the previous install remove the install items from the set
-        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_regex) > 0:
-            print('[i] Existing mr-robot-ops-regex install identified')
-            with open(path_legacy_mrrobotops_regex, 'r') as fOpen:
+        if os.path.isfile(path_legacy_mmotti_regex) and os.path.getsize(path_legacy_regex) > 0:
+            print('[i] Existing mmotti-regex install identified')
+            with open(path_legacy_mmotti_regex, 'r') as fOpen:
                 regexps_legacy.update(x for x in (x.strip() for x in fOpen) if x and x[:1] != '#')
 
                 if regexps_legacy:
@@ -182,9 +182,9 @@ else:
         for line in sorted(regexps_local):
             fWrite.write(f'{line}\n')
 
-    # Output Mr-Robot-ops remote regexps to Mr-Robot-ops-regex.list
+    # Output mmotti remote regexps to mmotti-regex.list
     # for future install / uninstall
-    with open(path_legacy_mrrobotops_regex, 'w') as fWrite:
+    with open(path_legacy_mmotti_regex, 'w') as fWrite:
         for line in sorted(regexps_remote):
             fWrite.write(f'{line}\n')
 
