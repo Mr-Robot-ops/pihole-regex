@@ -94,8 +94,8 @@ if db_exists:
     # Create a cursor object
     c = conn.cursor()
 
-    # Identifying mmotti regexps
-    print("[i] Removing mmotti's regexps")
+    # Identifying mrrobotops regexps
+    print("[i] Removing mrrobotops regexps")
     c.executemany('DELETE FROM domainlist '
                   'WHERE type = 3 '
                   'AND (domain in (?) OR comment = ?)',
