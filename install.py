@@ -121,15 +121,15 @@ if db_exists:
                       [(x, install_comment) for x in sorted(regexps_remote)])
     conn.commit()
 
-    # Fetch all current mmotti regexps in the local db
+    # Fetch all current mrrobotops regexps in the local db
     c.execute('SELECT domain FROM domainlist WHERE type = 3 AND comment = ?', (install_comment,))
-    regexps_mmotti_local_results = c.fetchall()
-    regexps_mmotti_local.update([x[0] for x in regexps_mmotti_local_results])
+    regexps_mrrobotops_local_results = c.fetchall()
+    regexps_mrrobotops_local.update([x[0] for x in regexps_mrrobotops_local_results])
 
     # Remove any local entries that do not exist in the remote list
     # (will only work for previous installs where we've set the comment field)
     print('[i] Identifying obsolete regexps')
-    regexps_remove = regexps_mmotti_local.difference(regexps_remote)
+    regexps_remove = regexps_mrrobotops_local.difference(regexps_remote)
 
     if regexps_remove:
         print('[i] Removing obsolete regexps')
