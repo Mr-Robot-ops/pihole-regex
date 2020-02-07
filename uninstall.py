@@ -35,7 +35,7 @@ def fetch_url(url):
     return response
 
 
-url_regexps_remote = 'https://raw.githubusercontent.com/mmotti/pihole-regex/master/regex.list'
+url_regexps_remote = 'curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/regex.list'
 path_pihole = r'/etc/pihole'
 path_legacy_regex = os.path.join(path_pihole, 'regex.list')
 path_legacy_mmotti_regex = os.path.join(path_pihole, 'mmotti-regex.list')
