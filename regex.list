@@ -2000,3 +2000,13 @@ dating
 (^|\.)adultbaron\.com$
 (^|\.)stremanp.com\.com$
 (^|\.)postlnk.com\.com$
+(^|\.)reifefrauen.com\.com$
+(^|\.)psaimoodriy.com\.com$
+(^(((([-,_,a-z,1-9]*)\.)*)reifefrauen([-,_,a-z,1-9]*)\.)((([-,_,a-z,1-9]*)\.)*)(([a-z]*))$)
+(^(((([-,_,a-z,1-9]*)\.)*)reife([-,_,a-z,1-9]*)\.)((([-,_,a-z,1-9]*)\.)*)(([a-z]*))$)
+(^.)reifefrauen$
+(^.)reife$
+\.reifefrauen$
+\.reife$
+reifefrauen
+reife
