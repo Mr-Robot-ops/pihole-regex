@@ -29,7 +29,7 @@ sudo cp /etc/pihole/regex.list /etc/pihole/regex.list.bak
 
 ### Installation
 ```
-curl -sSl https://raw.githubusercontent.com/mmotti/pihole-regex/master/install.py | sudo python3
+curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/install.py | sudo python3
 ```
 
 #### Keeping regexps up-to-date
@@ -41,13 +41,13 @@ The following instructions will create a cron job to run each morning at 02:45 (
 ```
 SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
-45 2 * * * /usr/bin/curl -sSl https://raw.githubusercontent.com/mmotti/pihole-regex/master/install.py | /usr/bin/python3
+45 2 * * * /usr/bin/curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/install.py | /usr/bin/python3
 ```
 3. Save changes
 
 ### Removal
 ```
-curl -sSl https://raw.githubusercontent.com/mmotti/pihole-regex/master/uninstall.py | sudo python3
+curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/install.py | sudo python3
 ```
 
 #### Removing the cron job (if you created one)
