@@ -47,7 +47,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
 ### Removal
 ```
-curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/install.py | sudo python3
+curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/uninstall.py | sudo python3
 ```
 
 #### Removing the cron job (if you created one)
