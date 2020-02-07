@@ -34,11 +34,11 @@ def fetch_url(url):
     # Return the hosts
     return response
 
-#Thank you mmotti and CyberAndi 
+#Thank you mmotti and CyberAndi
 url_regexps_remote = 'https://github.com/Mr-Robot-ops/pihole-regex'
 path_pihole = r'/etc/pihole'
 path_legacy_regex = os.path.join(path_pihole, 'regex.list')
-path_legacy_mr_robot_ops_regex = os.path.join(path_pihole, 'Mr-Robot-ops-regex.list')
+path_legacy_mrrobotops_regex = os.path.join(path_pihole, 'mrrobotops-regex.list')
 path_pihole_db = os.path.join(path_pihole, 'gravity.db')
 install_comment = 'github.com/Mr-Robot-ops/pihole-regex'
 
@@ -49,7 +49,7 @@ c = None
 
 regexps_remote = set()
 regexps_local = set()
-regexps_mr_robot_ops_local = set()
+regexps_mrrobotops_local = set()
 regexps_legacy = set()
 regexps_remove = set()
 
