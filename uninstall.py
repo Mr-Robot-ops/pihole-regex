@@ -38,9 +38,9 @@ def fetch_url(url):
 url_regexps_remote = 'curl -sSl https://raw.githubusercontent.com/mr-robot-ops/pihole-regex/master/regex.list'
 path_pihole = r'/etc/pihole'
 path_legacy_regex = os.path.join(path_pihole, 'regex.list')
-path_legacy_mmotti_regex = os.path.join(path_pihole, 'mmotti-regex.list')
+path_legacy_mrrobotops_regex = os.path.join(path_pihole, 'mrrobotops-regex.list')
 path_pihole_db = os.path.join(path_pihole, 'gravity.db')
-install_comment = 'github.com/mmotti/pihole-regex'
+install_comment = 'github.com/mrrobotops/pihole-regex'
 
 
 db_exists = False
@@ -94,8 +94,8 @@ if db_exists:
     # Create a cursor object
     c = conn.cursor()
 
-    # Identifying mmotti regexps
-    print("[i] Removing mmotti's regexps")
+    # Identifying mrrobotops regexps
+    print("[i] Removing mrrobotops regexps")
     c.executemany('DELETE FROM domainlist '
                   'WHERE type = 3 '
                   'AND (domain in (?) OR comment = ?)',
@@ -126,17 +126,17 @@ else:
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
         # If we have a record of the previous install remove the install items from the set
-        if os.path.isfile(path_legacy_mmotti_regex) and os.path.getsize(path_legacy_regex) > 0:
-            print('[i] Existing mmotti-regex install identified')
-            with open(path_legacy_mmotti_regex, 'r') as fOpen:
+        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_regex) > 0:
+            print('[i] Existing mrrobotops-regex install identified')
+            with open(path_legacy_mrrobotops_regex, 'r') as fOpen:
                 regexps_legacy.update(x for x in (x.strip() for x in fOpen) if x and x[:1] != '#')
 
                 if regexps_legacy:
-                    print(f'[i] Removing regexps found in {path_legacy_mmotti_regex}')
+                    print(f'[i] Removing regexps found in {path_legacy_mrrobotops_regex}')
                     regexps_local.difference_update(regexps_legacy)
 
-            # Remove mmotti-regex.list as it will no longer be required
-            os.remove(path_legacy_mmotti_regex)
+            # Remove mrrobotops-regex.list as it will no longer be required
+            os.remove(path_legacy_mrrobotops_regex)
         else:
             print('[i] Removing regexps that match the remote repo')
             regexps_local.difference_update(regexps_remote)
