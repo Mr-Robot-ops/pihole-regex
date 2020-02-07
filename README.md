@@ -1,4 +1,4 @@
-## Regex Filters for Pi-hole (2012 Entries)
+## Regex Filters for Pi-hole (2020 Entries)
 This is a custom regex filter file for use with Pi-hole v4+ (FTLDNS).
 
 All commands will need to be entered via Terminal (PuTTY or your SSH client of choice) after logging in.
