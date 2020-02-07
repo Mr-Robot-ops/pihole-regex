@@ -126,17 +126,17 @@ else:
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
         # If we have a record of the previous install remove the install items from the set
-        if os.path.isfile(path_legacy_mmotti_regex) and os.path.getsize(path_legacy_regex) > 0:
-            print('[i] Existing mmotti-regex install identified')
-            with open(path_legacy_mmotti_regex, 'r') as fOpen:
+        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_regex) > 0:
+            print('[i] Existing mrrobotops-regex install identified')
+            with open(path_legacy_mrrobotops_regex, 'r') as fOpen:
                 regexps_legacy.update(x for x in (x.strip() for x in fOpen) if x and x[:1] != '#')
 
                 if regexps_legacy:
-                    print(f'[i] Removing regexps found in {path_legacy_mmotti_regex}')
+                    print(f'[i] Removing regexps found in {path_legacy_mrrobotops_regex}')
                     regexps_local.difference_update(regexps_legacy)
 
-            # Remove mmotti-regex.list as it will no longer be required
-            os.remove(path_legacy_mmotti_regex)
+            # Remove mrrobotops-regex.list as it will no longer be required
+            os.remove(path_legacy_mrrobotops_regex)
         else:
             print('[i] Removing regexps that match the remote repo')
             regexps_local.difference_update(regexps_remote)
