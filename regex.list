@@ -2103,3 +2103,5 @@ foot
 (^|\.)4tube\.com$
 (^|\.)handjob-handjob\.com$
 (^|\.)viewgals\.com$
+([a-zA-Z0-9\-\._]{0,256})(sendgrid)(\.net)
+.*(xn--)([a-zA-Z0-9\-\._]{2,256})*(\.[a-z]{2,18})
