@@ -101,7 +101,7 @@ if db_exists:
     # Add / update remote regexps
     print('[i] Adding / updating regexps in the DB')
 
-     c.executemany('INSERT OR IGNORE INTO domainlist (type, domain, enabled, comment) '
+    c.executemany('INSERT OR IGNORE INTO domainlist (type, domain, enabled, comment) '
                   'VALUES (3, ?, 1, ?)',
                   [(x, install_comment) for x in sorted(regexps_remote)])
     c.executemany('UPDATE domainlist '
