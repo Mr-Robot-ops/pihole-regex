@@ -49,24 +49,24 @@ c = None
 
 regexps_remote = set()
 regexps_local = set()
-regexps_mrrobotopsotti_local = set()
+regexps_mrrobotops_local = set()
 regexps_legacy = set()
 regexps_remove = set()
 
-# Exit if not running as root
-if not os.getuid() == 0:
-    print('Please run this script as root')
-    exit(1)
-else:
-    print('[i] Root user detected')
-
-# Exit if Pi-hole dir does not exist
-if not os.path.exists(path_pihole):
-    print(f'{path_pihole} was not found')
-    exit(1)
-else:
+# Check that pi-hole path exists
+if os.path.exists(path_pihole):
     print('[i] Pi-hole path exists')
+else:
+    print(f'[e] {path_pihole} was not found')
+    exit(1)
 
+# Check for write access to /etc/pihole
+if os.access(path_pihole, os.X_OK | os.W_OK):
+    print(f'[i] Write access to {path_pihole} verified')
+else:
+    print(f'[e] Write access is not available for {path_pihole}. Please run as root or other privileged user')
+    exit(1)
+    
 # Determine whether we are using DB or not
 if os.path.isfile(path_pihole_db) and os.path.getsize(path_pihole_db) > 0:
     db_exists = True
@@ -101,42 +101,31 @@ if db_exists:
     # Add / update remote regexps
     print('[i] Adding / updating regexps in the DB')
 
-    # Check for SQLite version
-    sqlite3_major, sqlite3_minor, sqlite3_revision = sqlite3.sqlite_version_info
+     c.executemany('INSERT OR IGNORE INTO domainlist (type, domain, enabled, comment) '
+                  'VALUES (3, ?, 1, ?)',
+                  [(x, install_comment) for x in sorted(regexps_remote)])
+    c.executemany('UPDATE domainlist '
+                  'SET comment = ? WHERE domain in (?) AND comment != ?',
+                  [(install_comment, x, install_comment) for x in sorted(regexps_remote)])
 
-    # If SQLite version < 3.24 (required for UPSERT)
-    if sqlite3_major == 3 and sqlite3_minor < 24:
-        c.executemany('INSERT OR IGNORE INTO domainlist (type, domain, enabled, comment) '
-                      'VALUES (3, ?, 1, ?)',
-                      [(x, install_comment) for x in sorted(regexps_remote)])
-        c.executemany('UPDATE domainlist '
-                      'SET comment = ? WHERE domain in (?) AND comment != ?',
-                      [(install_comment, x, install_comment) for x in sorted(regexps_remote)])
-    else:
-        c.executemany('INSERT INTO domainlist (type, domain, enabled, comment) '
-                      'VALUES (3, ?, 1, ?) '
-                      'ON CONFLICT(domain) DO UPDATE SET '
-                      'comment = excluded.comment '
-                      'WHERE comment != excluded.comment',
-                      [(x, install_comment) for x in sorted(regexps_remote)])
     conn.commit()
 
     # Fetch all current mrrobotops regexps in the local db
     c.execute('SELECT domain FROM domainlist WHERE type = 3 AND comment = ?', (install_comment,))
     regexps_mrrobotops_local_results = c.fetchall()
     regexps_mrrobotops_local.update([x[0] for x in regexps_mrrobotops_local_results])
-
-    # Remove any local entries that do not exist in the remote list
+   
+# Remove any local entries that do not exist in the remote list
     # (will only work for previous installs where we've set the comment field)
     print('[i] Identifying obsolete regexps')
     regexps_remove = regexps_mrrobotops_local.difference(regexps_remote)
 
-    if regexps_remove:
+   if regexps_remove:
         print('[i] Removing obsolete regexps')
-        c.executemany('DELETE FROM domainlist WHERE type = 3 AND domain in (?)', [(x,) for x in sorted(regexps_remove)])
+        c.executemany('DELETE FROM domainlist WHERE type = 3 AND domain in (?)', [(x,) for x in regexps_remove])
         conn.commit()
 
-    # Delete mrrobotops-regex.list as if we've migrated to the db, it's no longer needed
+    ## Delete mrrobotops-regex.list as if we've migrated to the db, it's no longer needed
     if os.path.exists(path_legacy_mrrobotops_regex):
         os.remove(path_legacy_mrrobotops_regex)
 
@@ -153,24 +142,28 @@ if db_exists:
     print(*sorted(regexps_local), sep='\n')
 
     conn.close()
-
+     
 else:
+    # If regex.list exists and is not empty
+    # Read it and add to a set
     if os.path.isfile(path_legacy_regex) and os.path.getsize(path_legacy_regex) > 0:
         print('[i] Collecting existing entries from regex.list')
         with open(path_legacy_regex, 'r') as fRead:
-            regexps_local.update(x for x in (x.strip() for x in fRead) if x and x[:1] != '#')
-
+            regexps_local.update(x for x in map(str.strip, fRead) if x and x[:1] != '#')
+    
+# If the local regexp set is not empty
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
-        # If we have a record of the previous install remove the install items from the set
-        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_regex) > 0:
+        # If we have a record of a previous legacy install
+        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_mrrobotops_regex) > 0:
             print('[i] Existing mrrobotops-regex install identified')
+            # Read the previously installed regexps to a set
             with open(path_legacy_mrrobotops_regex, 'r') as fOpen:
-                regexps_legacy.update(x for x in (x.strip() for x in fOpen) if x and x[:1] != '#')
+                regexps_legacy_mrrobotops.update(x for x in map(str.strip, fOpen) if x and x[:1] != '#')
 
-                if regexps_legacy:
+                if regexps_legacy_mrrobotops:
                     print('[i] Removing previously installed regexps')
-                    regexps_local.difference_update(regexps_legacy)
+                    regexps_local.difference_update(regexps_legacy_mrrobotops)
 
     # Add remote regexps to local regexps
     print(f'[i] Syncing with {url_regexps_remote}')
