@@ -49,19 +49,19 @@ regexps_remote = set()
 regexps_local = set()
 regexps_legacy = set()
 
-# Exit if not running as root
-if not os.getuid() == 0:
-    print('Please run this script as root')
-    exit(1)
-else:
-    print('[i] Root user detected')
-
-# Exit if Pi-hole dir does not exist
-if not os.path.exists(path_pihole):
-    print(f'{path_pihole} was not found')
-    exit(1)
-else:
+# Check that pi-hole path exists
+if os.path.exists(path_pihole):
     print('[i] Pi-hole path exists')
+else:
+    print(f'[e] {path_pihole} was not found')
+    exit(1)
+
+# Check for write access to /etc/pihole
+if os.access(path_pihole, os.X_OK | os.W_OK):
+    print(f'[i] Write access to {path_pihole} verified')
+else:
+    print(f'[e] Write access is not available for {path_pihole}. Please run as root or other privileged user')
+    exit(1)
 
 # Determine whether we are using DB or not
 if os.path.isfile(path_pihole_db) and os.path.getsize(path_pihole_db) > 0:
@@ -118,23 +118,26 @@ if db_exists:
     conn.close()
 
 else:
+    # If regex.list exists and is not empty
+    # Read it and add to a set
     if os.path.isfile(path_legacy_regex) and os.path.getsize(path_legacy_regex) > 0:
         print('[i] Collecting existing entries from regex.list')
         with open(path_legacy_regex, 'r') as fRead:
-            regexps_local.update(x for x in (x.strip() for x in fRead) if x and x[:1] != '#')
-
+            regexps_local.update(x for x in map(str.strip, fRead) if x and x[:1] != '#')
+    
+    # If the local regexp set is not empty
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
-        # If we have a record of the previous install remove the install items from the set
-        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_regex) > 0:
+        # If we have a record of the previous legacy install
+        if os.path.isfile(path_legacy_mrrobotops_regex) and os.path.getsize(path_legacy_mrrobotops_regex) > 0:
             print('[i] Existing mrrobotops-regex install identified')
             with open(path_legacy_mrrobotops_regex, 'r') as fOpen:
-                regexps_legacy.update(x for x in (x.strip() for x in fOpen) if x and x[:1] != '#')
-
-                if regexps_legacy:
+                regexps_legacy_mrrobotops.update(x for x in map(str.strip, fOpen) if x and x[:1] != '#')
+                
+                if regexps_legacy_mrrobotops:
                     print(f'[i] Removing regexps found in {path_legacy_mrrobotops_regex}')
-                    regexps_local.difference_update(regexps_legacy)
-
+                    regexps_local.difference_update(regexps_legacy_mrrobotops)
+            
             # Remove mrrobotops-regex.list as it will no longer be required
             os.remove(path_legacy_mrrobotops_regex)
         else:
