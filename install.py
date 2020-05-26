@@ -115,17 +115,17 @@ if db_exists:
     regexps_mrrobotops_local_results = c.fetchall()
     regexps_mrrobotops_local.update([x[0] for x in regexps_mrrobotops_local_results])
    
-# Remove any local entries that do not exist in the remote list
+    # Remove any local entries that do not exist in the remote list
     # (will only work for previous installs where we've set the comment field)
     print('[i] Identifying obsolete regexps')
     regexps_remove = regexps_mrrobotops_local.difference(regexps_remote)
 
-   if regexps_remove:
+    if regexps_remove:
         print('[i] Removing obsolete regexps')
         c.executemany('DELETE FROM domainlist WHERE type = 3 AND domain in (?)', [(x,) for x in regexps_remove])
         conn.commit()
 
-    ## Delete mrrobotops-regex.list as if we've migrated to the db, it's no longer needed
+    # Delete mrrobotops-regex.list as if we've migrated to the db, it's no longer needed
     if os.path.exists(path_legacy_mrrobotops_regex):
         os.remove(path_legacy_mrrobotops_regex)
 
@@ -142,7 +142,7 @@ if db_exists:
     print(*sorted(regexps_local), sep='\n')
 
     conn.close()
-     
+
 else:
     # If regex.list exists and is not empty
     # Read it and add to a set
@@ -150,8 +150,8 @@ else:
         print('[i] Collecting existing entries from regex.list')
         with open(path_legacy_regex, 'r') as fRead:
             regexps_local.update(x for x in map(str.strip, fRead) if x and x[:1] != '#')
-    
-# If the local regexp set is not empty
+
+    # If the local regexp set is not empty
     if regexps_local:
         print(f'[i] {len(regexps_local)} existing regexps identified')
         # If we have a record of a previous legacy install
