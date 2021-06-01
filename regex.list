@@ -48,8 +48,6 @@ altpayservices\.com$
 civey\.com
 ^static\.
 ^pubads.\?\.doubleclick\.net
-^?\.media-amazon\.com
-media-amazon\.com
 traffective\.com
 met\.vgwort\.de
 71m\.com
@@ -364,7 +362,6 @@ ngbc5azd
 \.zw$
 (^(((([-,_,a-z,1-9]*)\.)*)porno([-,_,a-z,1-9]*)\.)((([-,_,a-z,1-9]*)\.)*)(([a-z]*))$)
 (^(((([-,_,a-z,1-9]*)\.)*)inthevip([-,_,a-z,1-9]*)\.)((([-,_,a-z,1-9]*)\.)*)(([a-z]*))$)
-(((([-,a-z,1-9]*)\.)*)(([-,a-z,1-9])*)(gov|mil|fbi|cia|nsa|dea|bnd|bmi|pol|mad|bfv|lka|bka)((([-,a-z,1-9]*)\.)*)amazon((([-,a-z]*)\.)*)([a-z]*))
 tradedoubler\.([a-z]*)
 ((([-,a-z,1-9]*)\.)*([-,a-z,1-9]*)tradedoubler(([-,a-z,1-9]*)\.)*([a-z])*)
 \.xyz$
